@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>public</access>
+        <active>true</active>
+        <api_name>global.CF_EmailParsingUtils</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <mobile_callable>false</mobile_callable>
+        <name>CF_EmailParsingUtils</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[/**
+ * Utility class for parsing email content, including HTML stripping and key-value pair extraction.
+ * Look for Fix Script CF_EmailParsingUtils Tests to test different scenarios and/or add your own.
+ */
+class CF_EmailParsingUtils {
+    /**
+     * Constructs the CF_EmailParsingUtils instance.
+     * @param {boolean} [debug=false] - Whether to enable debug logging.
+     */
+    constructor(debug = false) {
+        this.logger = new GSLog('', 'Parse Email Body flow action');
+        const logLevel = debug ? "debug" : "warn";
+        this.logger.setLevel(logLevel);
+    }
+
+    /**
+     * Converts HTML content to plain text by removing tags and formatting.
+     * @param {string} html - The HTML content to be converted.
+     * @returns {string} The plain text representation of the HTML content.
+     * @throws {Error} If the input is undefined, null, or not a string.
+     */
+    HTMLtoText(html) {
+        this.logger.logDebug("HTMLtoText() called with input: " + html);
+        if (gs.nil(html) || typeof html !== "string") {
+            throw new Error(`CF_EmailParser().htmlToStr(): html is undefined, null, or not a string. Received value: ${html}`);
+        }
+        try {
+            let noHTML = html;
+            noHTML = this.removeStyleAndScriptBlocks(noHTML);
+            noHTML = this.replaceBrTagsWithNewlines(noHTML);
+            noHTML = this.addNewlinesAfterBlockTags(noHTML);
+            noHTML = this.handleTdBlocks(noHTML);
+            noHTML = this.removeRemainingHtmlTags(noHTML);
+            noHTML = this.decodeHtmlEntities(noHTML);
+            noHTML = this.removeBlankLines(noHTML);
+
+            return decodeURIComponent(noHTML.trim());
+        } catch (err) {
+            gs.error("Error decoding URI: " + err.message);
+            return html; // Return the original HTML if decoding fails
+        }
+    }
+
+    /**
+     * Parses a string into a key-value object based on colon-separated pairs.
+     * If the string contains HTML, it will be cleaned first.
+     * @param {string} stringToParse - The string to parse into key-value pairs.
+     * @returns {Object} An object containing the parsed key-value pairs.
+     * @throws {Error} If the input is undefined, null, or not a string.
+     */
+    parseNameValuePairs(stringToParse) {
+        this.logger.logDebug("parseNameValuePairs() called with input: " + stringToParse);
+        if (gs.nil(stringToParse) || typeof stringToParse !== "string") {
+            throw new Error("CF_EmailParser().parseEmailBody(): emailBodyText is undefined, null, or not a string.\n Type: " + typeof stringToParse);
+        }
+        try {
+            if (this.isHTML(stringToParse)) {
+                this.logger.logDebug("HTML detected - Body Text before cleanup: \n" + stringToParse);
+                stringToParse = this.HTMLtoText(stringToParse);
+                this.logger.logDebug("Body Text after cleanup: \n" + stringToParse);
+            }
+
+            stringToParse = this.normalizeWhitespace(stringToParse);
+            
+
+            return this.extractKeyValuePairs(stringToParse);
+        } catch (ex) {
+            gs.error("Error in parsing email body: " + ex.message);
+            return {};
+        }
+    }
+
+        /**
+     * Extracts key-value pairs from a string where each pair is separated by a colon.
+     * Handles multiline values by appending them to the previous key's value.
+     * @param {string} inputString - The string to extract key-value pairs from.
+     * @returns {Object} An object containing the extracted key-value pairs.
+     * @throws {Error} If the input is undefined, null, or not a string.
+     */
+        extractKeyValuePairs(inputString) {
+            this.logger.logDebug("extractKeyValuePairs() called with input: " + inputString);
+            if (gs.nil(inputString) || typeof inputString !== "string") {
+                throw new Error("extractKeyValuePairs(): inputString is undefined, null, or not a string. Received value: " + inputString);
+            }
+            //inputString = this.normalizeWhitespace(inputString); // Normalize whitespace
+            // Preprocess input to normalize newlines around the colon
+           // inputString = inputString.replace(/:\s*\\n\s*/g, ": "); // Replace newlines after a colon with a space
+            inputString = inputString.replace(/\n\s*:/g, ":"); // Remove newlines before a colon
+    
+            const regEx = /^([^:\n]+):([^\r\n]*)$/gm; // Match key-value pairs separated by a colon
+            const emailObj = {};
+            let match;
+    
+            while ((match = regEx.exec(inputString)) !== null) {
+                const key = match[1].replace(/(?:\\n)+/g, '\n').trim();
+                const value = match[2].replace(/(?:\\n)+/g, '\n').trim() // Replace literal \n with actual newlines;
+                this.logger.logDebug(`Extracted key-value pair: ${key} -> ${value}`);
+                emailObj[key] = value;
+            }
+    
+            return emailObj;
+        }
+
+    /**
+     * Checks if a string contains any HTML tags.
+     * @param {string} [strToCheck=''] - The string to check for HTML tags.
+     * @returns {boolean} True if the string contains HTML tags, false otherwise.
+     */
+    isHTML(strToCheck = '') {
+        this.logger.logDebug("isHTML() called with input: " + strToCheck);
+        return /<[^>]+>/i.test(strToCheck); // Matches any HTML tag
+    }
+
+    /**
+     * Removes <style> and &lt;script&gt; blocks from the HTML content.
+     * @param {string} html - The HTML content to process.
+     * @returns {string} The HTML content without <style> and &lt;script&gt; blocks.
+     */
+    removeStyleAndScriptBlocks(html) {
+        this.logger.logDebug("removeStyleAndScriptBlocks() called.");
+        return html
+            .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, '') // Remove <style> blocks
+            .replace(/&lt;script&gt;[\s\S]*?<\/script>/gi, ''); // Remove &lt;script&gt; blocks
+    }
+
+    /**
+     * Replaces <br> tags with newline characters.
+     * @param {string} html - The HTML content to process.
+     * @returns {string} The HTML content with <br> tags replaced by newlines.
+     */
+    replaceBrTagsWithNewlines(html) {
+        this.logger.logDebug("replaceBrTagsWithNewlines() called.");
+        return html.replace(/<br(?:\s*)?\/?>/gi, "\n"); // Replace <br> tags with newlines
+    }
+
+    /**
+     * Adds newline characters after block-level tags such as <div>, <p>, and <li>.
+     * @param {string} html - The HTML content to process.
+     * @returns {string} The HTML content with newlines added after block-level tags.
+     */
+    addNewlinesAfterBlockTags(html) {
+        this.logger.logDebug("addNewlinesAfterBlockTags() called.");
+        return html.replace(/<\/(?:tr|div|p|h[1-6]|li)>/gi, "\n"); // Add newlines after block-level tags
+    }
+
+    /**
+     * Processes <td> blocks to remove tags and normalize content.
+     * @param {string} html - The HTML content to process.
+     * @returns {string} The HTML content with <td> blocks handled.
+     */
+    handleTdBlocks(html) {
+        this.logger.logDebug("handleTdBlocks() called.");
+        return html.replace(/<td[^>]*>([\s\S]*?)<\/td>/gi, (match, content) => {
+            return content
+                .replace(/[\r\n]+/g, '\\n') // Replace actual newlines with literal \n
+                .replace(/<[^>]+>/g, '');  // Remove all tags inside <td> while keeping the content
+        });
+    }
+
+    /**
+     * Removes all remaining HTML tags from the content.
+     * @param {string} html - The HTML content to process.
+     * @returns {string} The plain text content with all HTML tags removed.
+     */
+    removeRemainingHtmlTags(html) {
+        this.logger.logDebug("removeRemainingHtmlTags() called.");
+        return html.replace(/<[^\/>]*\/?>|<\/[^>]+>/gi, ''); // Remove all remaining HTML tags
+    }
+
+    /**
+     * Decodes common HTML entities into their corresponding characters.
+     * @param {string} html - The HTML content to process.
+     * @returns {string} The HTML content with entities decoded.
+     */
+    decodeHtmlEntities(html) {
+        this.logger.logDebug("decodeHtmlEntities() called.");
+        return html
+            .replace(/&nbsp;/g, " ") // Replace non-breaking spaces
+            .replace(/&amp;/g, "&") // Replace &amp; with &
+            .replace(/&lt;/g, "<") // Replace &lt; with <
+            .replace(/&gt;/g, ">") // Replace &gt; with >
+            .replace(/&quot;/g, '"') // Replace &quot; with "
+            .replace(/&#39;/g, "'"); // Replace &#39; with '
+    }
+
+    /**
+     * Removes blank lines from the content.
+     * @param {string} html - The content to process.
+     * @returns {string} The content with blank lines removed.
+     */
+    removeBlankLines(html) {
+        this.logger.logDebug("removeBlankLines() called.");
+        return html.replace(/^\s*[\r\n]+/gm, ''); // Remove blank lines
+    }
+
+    /**
+     * Normalizes whitespace in the input string by collapsing multiple newlines
+     * and trimming leading/trailing whitespace on each line.
+     * @param {string} inputString - The string to normalize.
+     * @returns {string} The normalized string.
+     * @throws {Error} If the input is undefined, null, or not a string.
+     */
+    normalizeWhitespace(inputString) {
+        this.logger.logDebug("normalizeWhitespace() called with input: " + inputString);
+        if (gs.nil(inputString) || typeof inputString !== "string") {
+            throw new Error("normalizeWhitespace(): inputString is undefined, null, or not a string. Received value: " + inputString);
+        }
+        return inputString
+            .replace(/[\r\n]+/g, '\n') // Collapse multiple newlines into a single newline
+            .replace(/^\s+|\s+$/gm, ''); // Trim leading/trailing whitespace on each line
+    }
+
+ 
+
+
+}]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>ben.scherer</sys_created_by>
+        <sys_created_on>2025-03-26 17:39:43</sys_created_on>
+        <sys_id>927aecdd83a8e250e42ca230ceaad322</sys_id>
+        <sys_mod_count>47</sys_mod_count>
+        <sys_name>CF_EmailParsingUtils</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_update_name>sys_script_include_927aecdd83a8e250e42ca230ceaad322</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-03-27 18:33:32</sys_updated_on>
+    </sys_script_include>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope>
+        <claim_timestamp>19d30350db40000001</claim_timestamp>
+        <metadata_update_name>sys_script_include_927aecdd83a8e250e42ca230ceaad322</metadata_update_name>
+        <previous_claim_app_version>1.0.0</previous_claim_app_version>
+        <previous_claim_name>Parsing Utilities</previous_claim_name>
+        <previous_claim_scope>54d4598f83b33210bc5dccc6feaad30c</previous_claim_scope>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-03-27 16:51:16</sys_created_on>
+        <sys_id>1655d9cf83b33210bc5dccc6feaad39a</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-03-27 16:51:16</sys_updated_on>
+    </sys_claim>
+    <sys_es_latest_script action="INSERT_OR_UPDATE">
+        <id>927aecdd83a8e250e42ca230ceaad322</id>
+        <sys_created_by>ben.scherer</sys_created_by>
+        <sys_created_on>2025-03-26 17:39:43</sys_created_on>
+        <sys_id>238a2cdd83a8e250e42ca230ceaad344</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>ben.scherer</sys_updated_by>
+        <sys_updated_on>2025-03-26 17:39:43</sys_updated_on>
+        <table>sys_script_include</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+</record_update>
