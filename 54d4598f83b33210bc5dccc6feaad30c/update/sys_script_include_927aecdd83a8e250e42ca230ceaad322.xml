@@ -72,7 +72,7 @@ class CF_EmailParsingUtils {
             }
 
             stringToParse = this.normalizeWhitespace(stringToParse);
-            
+
 
             return this.extractKeyValuePairs(stringToParse);
         } catch (ex) {
@@ -81,36 +81,96 @@ class CF_EmailParsingUtils {
         }
     }
 
-        /**
-     * Extracts key-value pairs from a string where each pair is separated by a colon.
-     * Handles multiline values by appending them to the previous key's value.
-     * @param {string} inputString - The string to extract key-value pairs from.
-     * @returns {Object} An object containing the extracted key-value pairs.
-     * @throws {Error} If the input is undefined, null, or not a string.
-     */
-        extractKeyValuePairs(inputString) {
-            this.logger.logDebug("extractKeyValuePairs() called with input: " + inputString);
-            if (gs.nil(inputString) || typeof inputString !== "string") {
-                throw new Error("extractKeyValuePairs(): inputString is undefined, null, or not a string. Received value: " + inputString);
-            }
-            //inputString = this.normalizeWhitespace(inputString); // Normalize whitespace
-            // Preprocess input to normalize newlines around the colon
-           // inputString = inputString.replace(/:\s*\\n\s*/g, ": "); // Replace newlines after a colon with a space
-            inputString = inputString.replace(/\n\s*:/g, ":"); // Remove newlines before a colon
-    
-            const regEx = /^([^:\n]+):([^\r\n]*)$/gm; // Match key-value pairs separated by a colon
-            const emailObj = {};
-            let match;
-    
-            while ((match = regEx.exec(inputString)) !== null) {
-                const key = match[1].replace(/(?:\\n)+/g, '\n').trim();
-                const value = match[2].replace(/(?:\\n)+/g, '\n').trim() // Replace literal \n with actual newlines;
-                this.logger.logDebug(`Extracted key-value pair: ${key} -> ${value}`);
-                emailObj[key] = value;
-            }
-    
-            return emailObj;
+    /**
+ * Extracts key-value pairs from a string where each pair is separated by a colon.
+ * Handles multiline values by appending them to the previous key's value.
+ * @param {string} inputString - The string to extract key-value pairs from.
+ * @returns {Object} An object containing the extracted key-value pairs.
+ * @throws {Error} If the input is undefined, null, or not a string.
+ */
+    extractKeyValuePairs(inputString) {
+        this.logger.logDebug("extractKeyValuePairs() called with input: " + inputString);
+        if (gs.nil(inputString) || typeof inputString !== "string") {
+            throw new Error("extractKeyValuePairs(): inputString is undefined, null, or not a string. Received value: " + inputString);
         }
+        //inputString = this.normalizeWhitespace(inputString); // Normalize whitespace
+        // Preprocess input to normalize newlines around the colon
+        // inputString = inputString.replace(/:\s*\\n\s*/g, ": "); // Replace newlines after a colon with a space
+        inputString = inputString.replace(/\n\s*:/g, ":"); // Remove newlines before a colon
+
+        const regEx = /^([^:\n]+):([^\r\n]*)$/gm; // Match key-value pairs separated by a colon
+        const emailObj = {};
+        let match;
+
+        while ((match = regEx.exec(inputString)) !== null) {
+            const key = match[1].replace(/(?:\\n)+/g, '\n').trim();
+            const value = match[2].replace(/(?:\\n)+/g, '\n').trim() // Replace literal \n with actual newlines;
+            this.logger.logDebug(`Extracted key-value pair: ${key} -> ${value}`);
+            emailObj[key] = value;
+        }
+
+        return emailObj;
+    }
+
+
+    /**
+   * Parses HTML tables into an array of name-value pair objects using column headers as keys.
+   * The first row (TD or TH) of each table is treated as the header row, and subsequent rows are parsed into objects based on those headers.
+   * @param {string} html - The HTML content containing one or more tables to parse.
+   * @returns {Array<{name: string, value: string}>} An array of name-value pair objects.
+   * @throws {Error} If the input is undefined, null, or not a string.
+   */
+    parseHtmlTables(html) {
+        this.logger.logDebug("parseHtmlTables() called with input: " + html);
+        if (gs.nil(html) || typeof html !== "string") {
+            throw new Error("parseHtmlTables(): html is undefined, null, or not a string. Received value: " + html);
+        }
+
+        const results = [];
+
+
+        const extractRowCells = (rowHtml) => {
+            const cells = [];
+            const cellRegex = /<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi;
+            let cellMatch;
+            while ((cellMatch = cellRegex.exec(rowHtml)) !== null) {
+                cells.push(cellMatch[1].trim());
+            }
+            return cells;
+        };
+
+        const rowToObj = (rowHtml, headers) => {
+            const cells = extractRowCells(rowHtml);
+            let rowObj = {};
+            for (let i = 0; i < cells.length; i++) {
+                const header = headers[i];
+                rowObj[header] = cells[i];
+            }
+            return rowObj;
+        };
+
+        const tableRegex = /<table[\s\S]*?<\/table>/gi;
+        let tableMatch;
+        while ((tableMatch = tableRegex.exec(html)) !== null) {
+            const tableHtml = tableMatch[0];
+            const rowRegex = /<tr(?:\s+[^>]+)*>([\s\S]*?)<\/tr>/gi;
+            const rows = tableHtml.match(rowRegex) || [];
+
+            if (rows.length === 0) {
+                continue; // Skip tables with no rows
+            }
+
+            const headers = extractRowCells(rows[0]); // Use the first row as headers
+            for (let i = 1; i < rows.length; i++) {
+                const rowObj = rowToObj(rows[i], headers);
+                results.push(rowObj);
+            }
+
+
+        }
+
+        return results;
+    }
 
     /**
      * Checks if a string contains any HTML tags.
@@ -221,7 +281,7 @@ class CF_EmailParsingUtils {
             .replace(/^\s+|\s+$/gm, ''); // Trim leading/trailing whitespace on each line
     }
 
- 
+
 
 
 }]]></script>
@@ -229,14 +289,14 @@ class CF_EmailParsingUtils {
         <sys_created_by>ben.scherer</sys_created_by>
         <sys_created_on>2025-03-26 17:39:43</sys_created_on>
         <sys_id>927aecdd83a8e250e42ca230ceaad322</sys_id>
-        <sys_mod_count>47</sys_mod_count>
+        <sys_mod_count>51</sys_mod_count>
         <sys_name>CF_EmailParsingUtils</sys_name>
         <sys_package display_value="Global" source="global">global</sys_package>
         <sys_policy/>
         <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
         <sys_update_name>sys_script_include_927aecdd83a8e250e42ca230ceaad322</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2026-03-27 18:33:32</sys_updated_on>
+        <sys_updated_on>2026-04-14 15:23:25</sys_updated_on>
     </sys_script_include>
     <sys_claim action="INSERT_OR_UPDATE">
         <claim_owner_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope>
