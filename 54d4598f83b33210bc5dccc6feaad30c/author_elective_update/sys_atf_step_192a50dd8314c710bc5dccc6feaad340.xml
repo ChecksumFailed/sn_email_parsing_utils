@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_atf_step">
+    <sys_atf_step action="DELETE">
+        <active>true</active>
+        <callable_outputs/>
+        <copied_from/>
+        <description>Run Server Side Validation Script</description>
+        <display_name>Run Server Side Script</display_name>
+        <inputs/>
+        <mugshots_cache_json/>
+        <notes/>
+        <order>4</order>
+        <step_config display_value="Run Server Side Script">41de4a935332120028bc29cac2dc349a</step_config>
+        <sys_class_name>sys_atf_step</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:34:37</sys_created_on>
+        <sys_id>192a50dd8314c710bc5dccc6feaad340</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Run Server Side Script</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_update_name>sys_atf_step_192a50dd8314c710bc5dccc6feaad340</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:44:54</sys_updated_on>
+        <table>atf.server.runServerSideScript</table>
+        <test display_value="CF_EmailParsingUtils - parseHtmlTables">45761c158314c710bc5dccc6feaad372</test>
+        <timeout/>
+        <warning_message/>
+    </sys_atf_step>
+    <sys_variable_value action="DELETE" query="document_key=192a50dd8314c710bc5dccc6feaad340"/>
+    <sys_variable_value action="DELETE">
+        <document>sys_atf_step</document>
+        <document_key>192a50dd8314c710bc5dccc6feaad340</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:34:37</sys_created_on>
+        <sys_id>1d2a50dd8314c710bc5dccc6feaad373</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:34:37</sys_updated_on>
+        <value>3.1</value>
+        <variable display_value="Jasmine version">42f2564b73031300440211d8faf6a777</variable>
+    </sys_variable_value>
+    <sys_variable_value action="DELETE">
+        <document>sys_atf_step</document>
+        <document_key>192a50dd8314c710bc5dccc6feaad340</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:34:37</sys_created_on>
+        <sys_id>512a50dd8314c710bc5dccc6feaad374</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:34:37</sys_updated_on>
+        <value>(function(outputs, steps, params, stepResult, assertEqual) {
+    var parser = new CF_EmailParsingUtils();
+    var result = parser.parseHtmlTables('&lt;table&gt;&lt;/table&gt;');
+    if (!Array.isArray(result)) {
+        stepResult.setOutputMessage('FAIL: Expected Array result. Got: ' + typeof result);
+        stepResult.setFailed();
+        return;
+    }
+    if (result.length !== 0) {
+        stepResult.setOutputMessage('FAIL: Expected empty array for empty table. Got length: ' + result.length);
+        stepResult.setFailed();
+        return;
+    }
+    stepResult.setOutputMessage('PASS: Empty table correctly returned empty array');
+    stepResult.setSuccess();
+})(outputs, steps, params, stepResult, assertEqual);</value>
+        <variable display_value="Test script">989d9e235324220002c6435723dc3484</variable>
+    </sys_variable_value>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope>
+        <claim_timestamp>19d9351a2930000001</claim_timestamp>
+        <metadata_update_name>sys_atf_step_192a50dd8314c710bc5dccc6feaad340</metadata_update_name>
+        <previous_claim_app_version>2.6</previous_claim_app_version>
+        <previous_claim_name>Email Parsing Utilities</previous_claim_name>
+        <previous_claim_scope>54d4598f83b33210bc5dccc6feaad30c</previous_claim_scope>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:44:54</sys_created_on>
+        <sys_id>bf7c50958354c710bc5dccc6feaad320</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:44:54</sys_updated_on>
+    </sys_claim>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</application>
+        <file_path/>
+        <instance_id>17c1c7351b79759852a243f4bd4bcbda</instance_id>
+        <instance_name>dev182929</instance_name>
+        <name>sys_atf_step_192a50dd8314c710bc5dccc6feaad340</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_atf_step"><sys_atf_step action="INSERT_OR_UPDATE"><active>true</active><callable_outputs/><copied_from/><description>Run Server Side Validation Script</description><display_name>Run Server Side Script</display_name><inputs/><mugshots_cache_json/><notes/><order>4</order><step_config display_value="Run Server Side Script">41de4a935332120028bc29cac2dc349a</step_config><sys_class_name>sys_atf_step</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2026-04-15 22:34:37</sys_created_on><sys_id>192a50dd8314c710bc5dccc6feaad340</sys_id><sys_mod_count>1</sys_mod_count><sys_name>Run Server Side Script</sys_name><sys_package display_value="Global" source="global">global</sys_package><sys_policy/><sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope><sys_update_name>sys_atf_step_192a50dd8314c710bc5dccc6feaad340</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2026-04-15 22:44:54</sys_updated_on><table>atf.server.runServerSideScript</table><test display_value="CF_EmailParsingUtils - parseHtmlTables">45761c158314c710bc5dccc6feaad372</test><timeout/><warning_message/></sys_atf_step><sys_variable_value action="delete_multiple" query="document_key=192a50dd8314c710bc5dccc6feaad340"/><sys_variable_value action="INSERT_OR_UPDATE"><document>sys_atf_step</document><document_key>192a50dd8314c710bc5dccc6feaad340</document_key><order>100</order><sys_class_name>sys_variable_value</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2026-04-15 22:34:37</sys_created_on><sys_id>1d2a50dd8314c710bc5dccc6feaad373</sys_id><sys_mod_count>0</sys_mod_count><sys_updated_by>admin</sys_updated_by><sys_updated_on>2026-04-15 22:34:37</sys_updated_on><value>3.1</value><variable display_value="Jasmine version">42f2564b73031300440211d8faf6a777</variable></sys_variable_value><sys_variable_value action="INSERT_OR_UPDATE"><document>sys_atf_step</document><document_key>192a50dd8314c710bc5dccc6feaad340</document_key><order>200</order><sys_class_name>sys_variable_value</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2026-04-15 22:34:37</sys_created_on><sys_id>512a50dd8314c710bc5dccc6feaad374</sys_id><sys_mod_count>1</sys_mod_count><sys_updated_by>admin</sys_updated_by><sys_updated_on>2026-04-15 22:34:37</sys_updated_on><value>(function(outputs, steps, params, stepResult, assertEqual) {
+    var parser = new CF_EmailParsingUtils();
+    var result = parser.parseHtmlTables('&lt;table&gt;&lt;/table&gt;');
+    if (!Array.isArray(result)) {
+        stepResult.setOutputMessage('FAIL: Expected Array result. Got: ' + typeof result);
+        stepResult.setFailed();
+        return;
+    }
+    if (result.length !== 0) {
+        stepResult.setOutputMessage('FAIL: Expected empty array for empty table. Got length: ' + result.length);
+        stepResult.setFailed();
+        return;
+    }
+    stepResult.setOutputMessage('PASS: Empty table correctly returned empty array');
+    stepResult.setSuccess();
+})(outputs, steps, params, stepResult, assertEqual);</value><variable display_value="Test script">989d9e235324220002c6435723dc3484</variable></sys_variable_value><sys_claim action="INSERT_OR_UPDATE"><claim_owner_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope><claim_timestamp>19d9351a2930000001</claim_timestamp><metadata_update_name>sys_atf_step_192a50dd8314c710bc5dccc6feaad340</metadata_update_name><previous_claim_app_version>2.6</previous_claim_app_version><previous_claim_name>Email Parsing Utilities</previous_claim_name><previous_claim_scope>54d4598f83b33210bc5dccc6feaad30c</previous_claim_scope><sys_created_by>admin</sys_created_by><sys_created_on>2026-04-15 22:44:54</sys_created_on><sys_id>bf7c50958354c710bc5dccc6feaad320</sys_id><sys_mod_count>0</sys_mod_count><sys_updated_by>admin</sys_updated_by><sys_updated_on>2026-04-15 22:44:54</sys_updated_on></sys_claim></record_update>]]></payload>
+        <payload_hash>-1553442832</payload_hash>
+        <record_name>Run Server Side Script</record_name>
+        <reverted_from/>
+        <source>8a6ad5748350c310bc5dccc6feaad381</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:44:54</sys_created_on>
+        <sys_id>f77c50958354c710bc5dccc6feaad34c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>19d9351a2f50000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:44:54</sys_updated_on>
+        <type>Test Step</type>
+        <update_guid>f77c5095c654c7102549bd72e66b634b</update_guid>
+        <update_guid_history>f77c5095c654c7102549bd72e66b634b:-1553442832,d52a50dd7414c7101421d8bd06c08877:880188582</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:54:48</sys_created_on>
+        <sys_db_object display_value="" name="sys_atf_step">sys_atf_step</sys_db_object>
+        <sys_id>796c90f7ada242a08054abf9d8446079</sys_id>
+        <sys_metadata>192a50dd8314c710bc5dccc6feaad340</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Run Server Side Script</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_scope_delete display_value="">3296acb76032422aa3caf9d0437a9c24</sys_scope_delete>
+        <sys_update_name>sys_atf_step_192a50dd8314c710bc5dccc6feaad340</sys_update_name>
+        <sys_update_version display_value="sys_atf_step_192a50dd8314c710bc5dccc6feaad340">f77c50958354c710bc5dccc6feaad34c</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:54:48</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>
