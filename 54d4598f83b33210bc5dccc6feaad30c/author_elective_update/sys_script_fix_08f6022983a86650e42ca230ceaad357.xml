@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_fix">
+    <sys_script_fix action="DELETE">
+        <before>false</before>
+        <description>Tests for the the CF_EmailParsingUtils SI</description>
+        <name>CF_EmailParsingUtil Tests</name>
+        <record_for_rollback>false</record_for_rollback>
+        <script><![CDATA[(function executeTest() {
+    var utils = new CF_EmailParsingUtils(false); // disable debug logging for testing
+
+    // Array of test cases
+    var testCases = [
+        {
+            description: "Simple HTML with key-value pairs",
+            input: "<p>Name: John Doe</p><p>Age: 30</p><p>Address: 123 Main St</p>",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+        {
+            description: "HTML with <br> tags",
+            input: "<p>Name: John Doe<br>Age: 30<br>Address: 123 Main St</p>",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+        {
+            description: "Plain text with multiline key-value pairs",
+            input: "Name: John Doe\nAge:\n30\nAddress:\n123 Main St",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+        {
+            description: "HTML with nested tags",
+            input: "<div><p><strong>Name:</strong> John Doe</p><p><em>Age:</em> 30</p><p><span>Address:</span> 123 Main St</p></div>",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+
+        
+        {
+            description: "HTML with entities",
+            input: "<p>Name: John Doe &amp; Jane Doe</p><p>Age: 30 &lt; 40</p><p>Address: 123 Main St &quot;Apt 4B&quot;</p>",
+            expected: {
+                "Name": "John Doe & Jane Doe",
+                "Age": "30 < 40",
+                "Address": "123 Main St \"Apt 4B\""
+            }
+        },
+
+    ];
+
+    // Array to store test results
+    var testResults = [];
+
+    // Run each test case
+    testCases.forEach(function(testCase, index) {
+        var description = testCase.description;
+        var input = testCase.input;
+        var expected = testCase.expected;
+
+        try {
+            var result = utils.parseNameValuePairs(input);
+            var passed = JSON.stringify(result) === JSON.stringify(expected);
+
+            // Store the result in the testResults array
+            testResults.push({
+                testNumber: index + 1,
+                description: description,
+                input: input,
+                expected: expected,
+                result: result,
+                status: passed ? "PASS" : "FAIL"
+            });
+        } catch (error) {
+            // Store the error in the testResults array
+            testResults.push({
+                testNumber: index + 1,
+                description: description,
+                input: input,
+                expected: expected,
+                result: null,
+                status: "ERROR",
+                error: error.message
+            });
+        }
+    });
+
+    // Output all test results as a JSON string
+    gs.print("Test Results:");
+    gs.print(JSON.stringify(testResults, null, 2)); // Pretty-print the JSON results
+})();]]></script>
+        <sys_class_name>sys_script_fix</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-03-27 19:03:13</sys_created_on>
+        <sys_id>08f6022983a86650e42ca230ceaad357</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>CF_EmailParsingUtil Tests</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_update_name>sys_script_fix_08f6022983a86650e42ca230ceaad357</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-03-27 16:51:17</sys_updated_on>
+        <unloadable>false</unloadable>
+    </sys_script_fix>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope>
+        <claim_timestamp>19d30350f870000001</claim_timestamp>
+        <metadata_update_name>sys_script_fix_08f6022983a86650e42ca230ceaad357</metadata_update_name>
+        <previous_claim_app_version>1.0.0</previous_claim_app_version>
+        <previous_claim_name>Parsing Utilities</previous_claim_name>
+        <previous_claim_scope>54d4598f83b33210bc5dccc6feaad30c</previous_claim_scope>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-03-27 16:51:17</sys_created_on>
+        <sys_id>2e55d9cf83b33210bc5dccc6feaad3a1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-03-27 16:51:17</sys_updated_on>
+    </sys_claim>
+    <sys_es_latest_script action="DELETE">
+        <id>08f6022983a86650e42ca230ceaad357</id>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2025-03-27 19:03:13</sys_created_on>
+        <sys_id>64470e2183a86650e42ca230ceaad312</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2025-03-27 19:03:13</sys_updated_on>
+        <table>sys_script_fix</table>
+        <use_es_latest>true</use_es_latest>
+    </sys_es_latest_script>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</application>
+        <file_path/>
+        <instance_id>17c1c7351b79759852a243f4bd4bcbda</instance_id>
+        <instance_name>dev182929</instance_name>
+        <name>sys_script_fix_08f6022983a86650e42ca230ceaad357</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sys_script_fix"&gt;&lt;sys_script_fix action="INSERT_OR_UPDATE"&gt;&lt;before&gt;false&lt;/before&gt;&lt;description&gt;Tests for the the CF_EmailParsingUtils SI&lt;/description&gt;&lt;name&gt;CF_EmailParsingUtil Tests&lt;/name&gt;&lt;record_for_rollback&gt;false&lt;/record_for_rollback&gt;&lt;script&gt;&lt;![CDATA[(function executeTest() {
+    var utils = new CF_EmailParsingUtils(false); // disable debug logging for testing
+
+    // Array of test cases
+    var testCases = [
+        {
+            description: "Simple HTML with key-value pairs",
+            input: "&lt;p&gt;Name: John Doe&lt;/p&gt;&lt;p&gt;Age: 30&lt;/p&gt;&lt;p&gt;Address: 123 Main St&lt;/p&gt;",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+        {
+            description: "HTML with &lt;br&gt; tags",
+            input: "&lt;p&gt;Name: John Doe&lt;br&gt;Age: 30&lt;br&gt;Address: 123 Main St&lt;/p&gt;",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+        {
+            description: "Plain text with multiline key-value pairs",
+            input: "Name: John Doe\nAge:\n30\nAddress:\n123 Main St",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+        {
+            description: "HTML with nested tags",
+            input: "&lt;div&gt;&lt;p&gt;&lt;strong&gt;Name:&lt;/strong&gt; John Doe&lt;/p&gt;&lt;p&gt;&lt;em&gt;Age:&lt;/em&gt; 30&lt;/p&gt;&lt;p&gt;&lt;span&gt;Address:&lt;/span&gt; 123 Main St&lt;/p&gt;&lt;/div&gt;",
+            expected: {
+                "Name": "John Doe",
+                "Age": "30",
+                "Address": "123 Main St"
+            }
+        },
+
+        
+        {
+            description: "HTML with entities",
+            input: "&lt;p&gt;Name: John Doe &amp;amp; Jane Doe&lt;/p&gt;&lt;p&gt;Age: 30 &amp;lt; 40&lt;/p&gt;&lt;p&gt;Address: 123 Main St &amp;quot;Apt 4B&amp;quot;&lt;/p&gt;",
+            expected: {
+                "Name": "John Doe &amp; Jane Doe",
+                "Age": "30 &lt; 40",
+                "Address": "123 Main St \"Apt 4B\""
+            }
+        },
+
+    ];
+
+    // Array to store test results
+    var testResults = [];
+
+    // Run each test case
+    testCases.forEach(function(testCase, index) {
+        var description = testCase.description;
+        var input = testCase.input;
+        var expected = testCase.expected;
+
+        try {
+            var result = utils.parseNameValuePairs(input);
+            var passed = JSON.stringify(result) === JSON.stringify(expected);
+
+            // Store the result in the testResults array
+            testResults.push({
+                testNumber: index + 1,
+                description: description,
+                input: input,
+                expected: expected,
+                result: result,
+                status: passed ? "PASS" : "FAIL"
+            });
+        } catch (error) {
+            // Store the error in the testResults array
+            testResults.push({
+                testNumber: index + 1,
+                description: description,
+                input: input,
+                expected: expected,
+                result: null,
+                status: "ERROR",
+                error: error.message
+            });
+        }
+    });
+
+    // Output all test results as a JSON string
+    gs.print("Test Results:");
+    gs.print(JSON.stringify(testResults, null, 2)); // Pretty-print the JSON results
+})();]]&gt;&lt;/script&gt;&lt;sys_class_name&gt;sys_script_fix&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2025-03-27 19:03:13&lt;/sys_created_on&gt;&lt;sys_id&gt;08f6022983a86650e42ca230ceaad357&lt;/sys_id&gt;&lt;sys_mod_count&gt;4&lt;/sys_mod_count&gt;&lt;sys_name&gt;CF_EmailParsingUtil Tests&lt;/sys_name&gt;&lt;sys_package display_value="Global" source="global"&gt;global&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Parsing Utilities"&gt;54d4598f83b33210bc5dccc6feaad30c&lt;/sys_scope&gt;&lt;sys_update_name&gt;sys_script_fix_08f6022983a86650e42ca230ceaad357&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2026-03-27 16:51:17&lt;/sys_updated_on&gt;&lt;unloadable&gt;false&lt;/unloadable&gt;&lt;/sys_script_fix&gt;&lt;sys_claim action="INSERT_OR_UPDATE"&gt;&lt;claim_owner_scope display_value="Parsing Utilities"&gt;54d4598f83b33210bc5dccc6feaad30c&lt;/claim_owner_scope&gt;&lt;claim_timestamp&gt;19d30350f870000001&lt;/claim_timestamp&gt;&lt;metadata_update_name&gt;sys_script_fix_08f6022983a86650e42ca230ceaad357&lt;/metadata_update_name&gt;&lt;previous_claim_app_version&gt;1.0.0&lt;/previous_claim_app_version&gt;&lt;previous_claim_name&gt;Parsing Utilities&lt;/previous_claim_name&gt;&lt;previous_claim_scope&gt;54d4598f83b33210bc5dccc6feaad30c&lt;/previous_claim_scope&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2026-03-27 16:51:17&lt;/sys_created_on&gt;&lt;sys_id&gt;2e55d9cf83b33210bc5dccc6feaad3a1&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2026-03-27 16:51:17&lt;/sys_updated_on&gt;&lt;/sys_claim&gt;&lt;sys_es_latest_script action="INSERT_OR_UPDATE"&gt;&lt;id&gt;08f6022983a86650e42ca230ceaad357&lt;/id&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2025-03-27 19:03:13&lt;/sys_created_on&gt;&lt;sys_id&gt;64470e2183a86650e42ca230ceaad312&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2025-03-27 19:03:13&lt;/sys_updated_on&gt;&lt;table&gt;sys_script_fix&lt;/table&gt;&lt;use_es_latest&gt;true&lt;/use_es_latest&gt;&lt;/sys_es_latest_script&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-89706291</payload_hash>
+        <record_name>CF_EmailParsingUtil Tests</record_name>
+        <reverted_from/>
+        <source>5c5f6e46187632108bb255f46a373a86</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-03-27 16:51:17</sys_created_on>
+        <sys_id>e655d9cf83b33210bc5dccc6feaad3b2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>19d30350ff40000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-03-27 16:51:17</sys_updated_on>
+        <type>Fix Script</type>
+        <update_guid>e655d9cfddb332101bafc725310207b1</update_guid>
+        <update_guid_history>e655d9cfddb332101bafc725310207b1:-89706291,133946e939a866501a1d8fd44f3fffae:190250227,1697ce2996a8665005fb2f7cece91e8f:1896222474,98878aa522a86650ded3e7ace9507449:823805178,a44742e5f4a86650b7638176ce695607:-1560650195</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete/>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-15 22:45:52</sys_created_on>
+        <sys_db_object display_value="" name="sys_script_fix">sys_script_fix</sys_db_object>
+        <sys_id>58a766d3c51d4f40a528d570c6a4aa40</sys_id>
+        <sys_metadata>08f6022983a86650e42ca230ceaad357</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>CF_EmailParsingUtil Tests</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_scope_delete display_value="">3296acb76032422aa3caf9d0437a9c24</sys_scope_delete>
+        <sys_update_name>sys_script_fix_08f6022983a86650e42ca230ceaad357</sys_update_name>
+        <sys_update_version display_value="sys_script_fix_08f6022983a86650e42ca230ceaad357">e655d9cf83b33210bc5dccc6feaad3b2</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-15 22:45:52</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>
