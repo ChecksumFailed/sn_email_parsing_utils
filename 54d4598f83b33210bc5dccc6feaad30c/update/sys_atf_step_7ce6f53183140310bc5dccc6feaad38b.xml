@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_atf_step">
+    <sys_atf_step action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <callable_outputs/>
+        <copied_from/>
+        <description>Run Server Side Validation Script</description>
+        <display_name>Run Server Side Script</display_name>
+        <inputs/>
+        <mugshots_cache_json/>
+        <notes/>
+        <order>2</order>
+        <step_config display_value="Run Server Side Script">41de4a935332120028bc29cac2dc349a</step_config>
+        <sys_class_name>sys_atf_step</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 18:36:47</sys_created_on>
+        <sys_id>7ce6f53183140310bc5dccc6feaad38b</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Run Server Side Script</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_update_name>sys_atf_step_7ce6f53183140310bc5dccc6feaad38b</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 19:00:22</sys_updated_on>
+        <table>atf.server.runServerSideScript</table>
+        <test display_value="CF_EmailParsingUtils: Parse Name-Value Pairs Action">b7f37df583d00310bc5dccc6feaad35f</test>
+        <timeout/>
+        <warning_message/>
+    </sys_atf_step>
+    <sys_variable_value action="delete_multiple" query="document_key=7ce6f53183140310bc5dccc6feaad38b"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>sys_atf_step</document>
+        <document_key>7ce6f53183140310bc5dccc6feaad38b</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 18:36:47</sys_created_on>
+        <sys_id>74e6f53183140310bc5dccc6feaad38d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 18:36:47</sys_updated_on>
+        <value>3.1</value>
+        <variable display_value="Jasmine version">42f2564b73031300440211d8faf6a777</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>sys_atf_step</document>
+        <document_key>7ce6f53183140310bc5dccc6feaad38b</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 18:36:47</sys_created_on>
+        <sys_id>b8e6f53183140310bc5dccc6feaad38d</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 18:36:47</sys_updated_on>
+        <value>(function(outputs, steps, params, stepResult, assertEqual) {
+  // HTML input: action should auto-strip tags and parse key:value pairs
+  var actionName = 'global.parse_namevalue_pairs';
+  var htmlInput = '&lt;html&gt;&lt;body&gt;&lt;p&gt;Priority: High&lt;/p&gt;&lt;p&gt;Category: Software&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;';
+  var inputs = { string_to_parse: htmlInput };
+  var result = sn_fd.FlowAPI.getRunner().action(actionName).inForeground().withInputs(inputs).run();
+  var actionOutputs = result.getOutputs();
+  var nvp = actionOutputs['name_value_pairs'];
+  if (!nvp) { stepResult.setFailed('FAIL: name_value_pairs output was null for HTML input'); return; }
+  var parsed = (typeof nvp === 'string') ? JSON.parse(nvp) : nvp;
+  if (parsed['Priority'] !== 'High') { stepResult.setFailed('FAIL: Priority expected "High", got: ' + parsed['Priority']); return; }
+  if (parsed['Category'] !== 'Software') { stepResult.setFailed('FAIL: Category expected "Software", got: ' + parsed['Category']); return; }
+  stepResult.setSuccess();
+  stepResult.setOutputMessage('PASS: HTML input auto-stripped and parsed. Result: ' + JSON.stringify(parsed));
+})(outputs, steps, params, stepResult, assertEqual);</value>
+        <variable display_value="Test script">989d9e235324220002c6435723dc3484</variable>
+    </sys_variable_value>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope>
+        <claim_timestamp>19d9cd0c9f50000001</claim_timestamp>
+        <metadata_update_name>sys_atf_step_7ce6f53183140310bc5dccc6feaad38b</metadata_update_name>
+        <previous_claim_app_version>2.6</previous_claim_app_version>
+        <previous_claim_name>Email Parsing Utilities</previous_claim_name>
+        <previous_claim_scope>54d4598f83b33210bc5dccc6feaad30c</previous_claim_scope>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 19:00:22</sys_created_on>
+        <sys_id>024c71bd83140310bc5dccc6feaad39d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 19:00:22</sys_updated_on>
+    </sys_claim>
+</record_update>

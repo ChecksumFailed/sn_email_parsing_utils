@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_atf_step">
+    <sys_atf_step action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <callable_outputs/>
+        <copied_from/>
+        <description>Run Server Side Validation Script</description>
+        <display_name>Run Server Side Script</display_name>
+        <inputs/>
+        <mugshots_cache_json/>
+        <notes/>
+        <order>3</order>
+        <step_config display_value="Run Server Side Script">41de4a935332120028bc29cac2dc349a</step_config>
+        <sys_class_name>sys_atf_step</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 18:37:26</sys_created_on>
+        <sys_id>d207bd3183140310bc5dccc6feaad324</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Run Server Side Script</sys_name>
+        <sys_package display_value="Global" source="global">global</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</sys_scope>
+        <sys_update_name>sys_atf_step_d207bd3183140310bc5dccc6feaad324</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 19:00:22</sys_updated_on>
+        <table>atf.server.runServerSideScript</table>
+        <test display_value="CF_EmailParsingUtils: Parse Email Body Text Action">dea5b93d83d00310bc5dccc6feaad388</test>
+        <timeout/>
+        <warning_message/>
+    </sys_atf_step>
+    <sys_variable_value action="delete_multiple" query="document_key=d207bd3183140310bc5dccc6feaad324"/>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>sys_atf_step</document>
+        <document_key>d207bd3183140310bc5dccc6feaad324</document_key>
+        <order>200</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 18:37:26</sys_created_on>
+        <sys_id>1207bd3183140310bc5dccc6feaad326</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 18:37:27</sys_updated_on>
+        <value>(function(outputs, steps, params, stepResult, assertEqual) {
+  // Create a second test email with only 2 key:value pairs in body_text
+  var gr = new GlideRecord('sys_email');
+  gr.initialize();
+  gr.setValue('subject', '[ATF Test Data] Email Parsing Utilities Test Email - 2 Pairs');
+  gr.setValue('body_text', 'Name: Jane Doe' + '\n' + 'Department: HR');
+  gr.setValue('type', 'received');
+  gr.setValue('state', 'processed');
+  var sysId = gr.insert();
+  if (!sysId) { stepResult.setFailed('FAIL: Could not create second test sys_email record'); return; }
+
+  // Run action against it
+  var emailRef = new GlideRecord('sys_email');
+  emailRef.get(sysId);
+  var inputs = { email: emailRef };
+  var result = sn_fd.FlowAPI.getRunner().action('global.parse_email_body_text').inForeground().withInputs(inputs).run();
+  var actionOutputs = result.getOutputs();
+  var emailVar = actionOutputs['email_variables'] || actionOutputs['email_var'];
+  if (!emailVar) { stepResult.setFailed('FAIL: email_variables output was null. Keys: ' + Object.keys(actionOutputs).join(',')); return; }
+  var parsed = (typeof emailVar === 'string') ? JSON.parse(emailVar) : emailVar;
+  if (Object.keys(parsed).length !== 2) { stepResult.setFailed('FAIL: Expected 2 pairs, got ' + Object.keys(parsed).length + ': ' + JSON.stringify(parsed)); return; }
+  if (parsed['Name'] !== 'Jane Doe') { stepResult.setFailed('FAIL: Name expected "Jane Doe", got: ' + parsed['Name']); return; }
+  if (parsed['Department'] !== 'HR') { stepResult.setFailed('FAIL: Department expected "HR", got: ' + parsed['Department']); return; }
+
+  // Clean up the second email (Step 1 email is cleaned up by ATF Record Insert auto-delete)
+  var cleanGr = new GlideRecord('sys_email');
+  if (cleanGr.get(sysId)) { cleanGr.deleteRecord(); }
+
+  stepResult.setSuccess();
+  stepResult.setOutputMessage('PASS: 2-pair email body parsed correctly. Result: ' + JSON.stringify(parsed));
+})(outputs, steps, params, stepResult, assertEqual);</value>
+        <variable display_value="Test script">989d9e235324220002c6435723dc3484</variable>
+    </sys_variable_value>
+    <sys_variable_value action="INSERT_OR_UPDATE">
+        <document>sys_atf_step</document>
+        <document_key>d207bd3183140310bc5dccc6feaad324</document_key>
+        <order>100</order>
+        <sys_class_name>sys_variable_value</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 18:37:26</sys_created_on>
+        <sys_id>da07bd3183140310bc5dccc6feaad325</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 18:37:26</sys_updated_on>
+        <value>3.1</value>
+        <variable display_value="Jasmine version">42f2564b73031300440211d8faf6a777</variable>
+    </sys_variable_value>
+    <sys_claim action="INSERT_OR_UPDATE">
+        <claim_owner_scope display_value="Email Parsing Utilities">54d4598f83b33210bc5dccc6feaad30c</claim_owner_scope>
+        <claim_timestamp>19d9cd0c96c0000001</claim_timestamp>
+        <metadata_update_name>sys_atf_step_d207bd3183140310bc5dccc6feaad324</metadata_update_name>
+        <previous_claim_app_version>2.6</previous_claim_app_version>
+        <previous_claim_name>Email Parsing Utilities</previous_claim_name>
+        <previous_claim_scope>54d4598f83b33210bc5dccc6feaad30c</previous_claim_scope>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-04-17 19:00:21</sys_created_on>
+        <sys_id>ce4c71bd83140310bc5dccc6feaad36e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-04-17 19:00:21</sys_updated_on>
+    </sys_claim>
+</record_update>
